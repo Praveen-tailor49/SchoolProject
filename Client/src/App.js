@@ -1,10 +1,17 @@
-import './App.css';
-import AppRoute from './auth';
+import { useEffect } from 'react';
+import { useSelector, shallowEqual } from 'react-redux'
+import { useNavigate } from 'react-router-dom';
+import AppRoute from './app/routes';
 
 function App() {
-  return (
-    <AppRoute auth={true}/>
-  );
+  const navigate = useNavigate()
+  const {token :auth} = useSelector((state) => state.auth, shallowEqual)
+
+  useEffect(() => {
+    if(!auth) navigate('/login') 
+  }, [auth])
+
+  return <AppRoute {...{auth}}/>
 }
 
 export default App;
