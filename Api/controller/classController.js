@@ -3,7 +3,7 @@ import db from '../db.js';
 export const getAllClasses = async (req, res) => {
   try {
     const [classes] = await db.query("SELECT * FROM classes ORDER BY class_name, section");
-    res.status(200).json({ data: classes, message: "Classes fetched successfully" });
+    res.status(200).json(classes);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

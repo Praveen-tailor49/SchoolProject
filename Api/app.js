@@ -16,7 +16,7 @@ import dashboard from "./routes/dashboard.js"
 const app = express();
 
 app.use(cors({
-  origin: ["http://localhost:3000", "http://localhost:3001"],
+  origin: ["http://localhost:3000", "http://localhost:3001", "http://10.88.154.67:3000", "http://10.88.154.67:3001", "http://10.88.154.67:9000", "exp://10.88.154.67:19000"],
   methods: "GET,POST,PUT,DELETE",
   allowedHeaders: "Content-Type, Authorization"
 }))

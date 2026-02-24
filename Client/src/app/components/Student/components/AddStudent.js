@@ -98,7 +98,7 @@ export default function AddStudentPage() {
                         />
                     </div>
 
-                    <div className="space-y-1">
+                    {/* <div className="space-y-1">
                         <label className="block text-xs font-medium">Date of Birth</label>
                         <input
                             type="date"
@@ -106,7 +106,7 @@ export default function AddStudentPage() {
                             value={individual.dob}
                             onChange={(e) => setIndividual({ ...individual, dob: e.target.value })}
                         />
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Row 2: Personal Details */}

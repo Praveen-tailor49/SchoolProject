@@ -2,10 +2,27 @@ import db from '../db.js';
 
 export const getDashboardStats = async (req, res) => {
   try {
+    // Student stats
     const [studentCount] = await db.query("SELECT COUNT(*) as count FROM students");
-    const [teacherCount] = await db.query("SELECT COUNT(*) as count FROM teacher");
-    const [classCount] = await db.query("SELECT COUNT(*) as count FROM classes");
+    const [activeStudents] = await db.query("SELECT COUNT(*) as count FROM students WHERE status = 'Active'");
+    const [inactiveStudents] = await db.query("SELECT COUNT(*) as count FROM students WHERE status = 'Inactive'");
     
+    // Teacher stats
+    const [teacherCount] = await db.query("SELECT COUNT(*) as count FROM teacher");
+    
+    // Class stats
+    const [classCount] = await db.query("SELECT COUNT(*) as count FROM classes");
+    const [sections] = await db.query("SELECT COUNT(DISTINCT CONCAT(class_name, '-', section)) as count FROM classes");
+    
+    // Admin stats
+    const [adminCount] = await db.query("SELECT COUNT(*) as count FROM admins");
+    const [roleCount] = await db.query("SELECT COUNT(*) as count FROM roles");
+    
+    // Staff stats
+    const [staffCount] = await db.query("SELECT COUNT(*) as count FROM staff");
+    const [activeStaff] = await db.query("SELECT COUNT(*) as count FROM staff WHERE status = 'Active'");
+    
+    // Today's attendance
     const today = new Date().toISOString().split('T')[0];
     const [attendanceToday] = await db.query(`
       SELECT 
@@ -19,41 +36,48 @@ export const getDashboardStats = async (req, res) => {
       ? ((attendanceToday[0].present / attendanceToday[0].total) * 100).toFixed(1) 
       : 0;
 
-    const [feeStats] = await db.query(`
+    // Fee/Invoice stats
+    const [invoiceStats] = await db.query(`
       SELECT 
-        SUM(amount) as total_amount,
-        SUM(paid_amount) as collected_amount,
-        SUM(amount - paid_amount) as pending_amount
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'Paid' THEN 1 ELSE 0 END) as paid,
+        SUM(CASE WHEN status = 'Unpaid' THEN 1 ELSE 0 END) as unpaid,
+        SUM(CASE WHEN status = 'Partial' THEN 1 ELSE 0 END) as partial
       FROM invoices
     `);
 
-    const [recentStudents] = await db.query(`
-      SELECT s.*, c.class_name, c.section 
-      FROM students s 
-      LEFT JOIN classes c ON s.class_id = c.class_id 
-      ORDER BY s.created_at DESC LIMIT 5
-    `);
-
-    const [recentPayments] = await db.query(`
-      SELECT p.*, s.name as student_name 
-      FROM payments p 
-      LEFT JOIN students s ON p.student_id = s.student_id 
-      ORDER BY p.created_at DESC LIMIT 5
+    // Payment stats
+    const [paymentStats] = await db.query(`
+      SELECT 
+        SUM(CASE WHEN status = 'Completed' THEN amount ELSE 0 END) as total,
+        SUM(CASE WHEN status = 'Completed' THEN amount ELSE 0 END) as received,
+        SUM(CASE WHEN status = 'Pending' THEN amount ELSE 0 END) as pending
+      FROM payments
     `);
 
     res.status(200).json({
-      data: {
-        stats: {
-          totalStudents: studentCount[0].count,
-          totalTeachers: teacherCount[0].count,
-          totalClasses: classCount[0].count,
-          attendancePercentage: attendancePercentage
-        },
-        feeStats: feeStats[0],
-        recentStudents,
-        recentPayments
-      },
-      message: "Dashboard stats fetched successfully"
+      totalClasses: classCount[0].count,
+      totalSections: sections[0].count,
+      totalStudents: studentCount[0].count,
+      activeStudents: activeStudents[0].count,
+      inactiveStudents: inactiveStudents[0].count,
+      promotedStudents: 0, // Placeholder - needs promotion logic
+      totalInquiries: 0, // Placeholder - needs inquiry table
+      activeInquiries: 0, // Placeholder - needs inquiry table
+      transferredOut: 0, // Placeholder - needs transfer logic
+      transferredIn: 0, // Placeholder - needs transfer logic
+      totalAdmins: adminCount[0].count,
+      totalRoles: roleCount[0].count,
+      totalStaff: staffCount[0].count,
+      activeStaff: activeStaff[0].count,
+      totalBooks: 0, // Placeholder - needs library tables
+      libraryCards: 0, // Placeholder - needs library tables
+      booksIssued: 0, // Placeholder - needs library tables
+      returnPending: 0, // Placeholder - needs library tables
+      publishedTimetables: 0, // Placeholder - needs exam tables
+      publishedAdmitCards: 0, // Placeholder - needs exam tables
+      publishedResults: 0, // Placeholder - needs exam tables
+      attendancePercentage: attendancePercentage
     });
   } catch (error) {
     console.log(error);
@@ -99,6 +123,42 @@ export const getAttendanceStats = async (req, res) => {
       ORDER BY date DESC
     `, [parseInt(days)]);
     res.status(200).json({ data: stats, message: "Attendance stats fetched successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getInvoiceStats = async (req, res) => {
+  try {
+    const [stats] = await db.query(`
+      SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'Paid' THEN 1 ELSE 0 END) as paid,
+        SUM(CASE WHEN status = 'Unpaid' THEN 1 ELSE 0 END) as unpaid,
+        SUM(CASE WHEN status = 'Partial' THEN 1 ELSE 0 END) as partial,
+        SUM(CASE WHEN status = 'Overdue' THEN 1 ELSE 0 END) as overdue
+      FROM invoices
+    `);
+    res.status(200).json(stats[0]);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getPaymentStats = async (req, res) => {
+  try {
+    const [stats] = await db.query(`
+      SELECT 
+        SUM(CASE WHEN status = 'Completed' THEN amount ELSE 0 END) as total,
+        SUM(CASE WHEN status = 'Completed' THEN amount ELSE 0 END) as received,
+        SUM(CASE WHEN status = 'Pending' THEN amount ELSE 0 END) as pending,
+        0 as expense,
+        SUM(CASE WHEN status = 'Completed' THEN amount ELSE 0 END) as income
+      FROM payments
+    `);
+    res.status(200).json(stats[0]);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

@@ -4,6 +4,8 @@ import httpClient from '../action/http-client';
 export const getDashboardStats = () => httpClient.get('dashboard/stats');
 export const getClassStats = () => httpClient.get('dashboard/class-stats');
 export const getAttendanceStats = (days = 7) => httpClient.get(`dashboard/attendance-stats?days=${days}`);
+export const getInvoiceStats = () => httpClient.get('dashboard/invoice-stats');
+export const getPaymentStats = () => httpClient.get('dashboard/payment-stats');
 
 // Students
 export const getStudents = () => httpClient.get('students');
@@ -72,7 +74,6 @@ export const getInvoices = (status, classId) => {
   return httpClient.get(url);
 };
 export const getInvoiceById = (id) => httpClient.get(`invoices/${id}`);
-export const getInvoiceStats = () => httpClient.get('invoices/stats');
 export const createInvoice = (data) => httpClient.post('invoices', data);
 export const updateInvoice = (id, data) => httpClient.put(`invoices/${id}`, data);
 export const deleteInvoice = (id) => httpClient.delete(`invoices/${id}`);
@@ -87,6 +88,5 @@ export const getPayments = (method, status) => {
   return httpClient.get(url);
 };
 export const getPaymentById = (id) => httpClient.get(`payments/${id}`);
-export const getPaymentStats = () => httpClient.get('payments/stats');
 export const createPayment = (data) => httpClient.post('payments', data);
 export const updatePaymentStatus = (id, status) => httpClient.put(`payments/${id}/status`, { status });

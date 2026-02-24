@@ -14,6 +14,16 @@ const auth = async (req, res, next) => {
     next();
   } catch (error) {
     console.log(error);
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ 
+        message: "Token expired", 
+        expired: true,
+        expiredAt: error.expiredAt 
+      });
+    }
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: "Invalid token" });
+    }
     res.status(401).json({ message: "Unauthorized" });
   }
 };

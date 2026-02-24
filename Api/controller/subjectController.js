@@ -3,7 +3,7 @@ import db from '../db.js';
 export const getAllSubjects = async (req, res) => {
   try {
     const [subjects] = await db.query("SELECT * FROM subjects ORDER BY subject_name");
-    res.status(200).json({ data: subjects, message: "Subjects fetched successfully" });
+    res.status(200).json(subjects);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
@@ -62,7 +62,7 @@ export const getSubjectsByClass = async (req, res) => {
   try {
     const { classId } = req.params;
     const [subjects] = await db.query("SELECT * FROM subjects WHERE class_id = ?", [classId]);
-    res.status(200).json({ data: subjects, message: "Subjects fetched successfully" });
+    res.status(200).json(subjects);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

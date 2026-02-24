@@ -18,8 +18,8 @@ import PromotionPage from '../components/Student/components/Promotion'
 import TransferPage from '../components/Student/components/Transfer'
 import CertificatesPage from '../components/Student/components/Certificates'
 import TeacherPage from '../components/Teacher'
+import AddTeacherPage from '../components/Teacher/components/AddTeacher'
 import AdminsPage from '../components/Administrator/Admins'
-import RolesPage from '../components/Administrator/Roles'
 import StaffPage from '../components/Administrator/Staff'
 import InvoicesPage from '../components/Accounting/Invoices'
 import PaymentsPage from '../components/Accounting/Payments'
@@ -30,6 +30,8 @@ import ExamsPage from '../components/Examination/Exams'
 import ResultsPage from '../components/Examination/Results'
 import BooksPage from '../components/Library/Books'
 import IssueReturnPage from '../components/Library/IssueReturn'
+import RolesPage from '../components/Administrator/Roles'
+import EnrollmentReport from '../components/Reports/EnrollmentReport'
 
 const ProctectRoutes = () => {
   return (
@@ -60,6 +62,9 @@ const ProctectRoutes = () => {
       {/* Teacher Routes */}
       <Route path='/teachers' element={<RoleBaseRoute role={"admin"}>
         <DashboardLayout children={<TeacherPage />} />
+      </RoleBaseRoute>} />
+      <Route path='/teachers/add' element={<RoleBaseRoute role={"admin"}>
+        <DashboardLayout children={<AddTeacherPage />} />
       </RoleBaseRoute>} />
 
       {/* Administrator Routes */}
@@ -140,6 +145,11 @@ const ProctectRoutes = () => {
       </RoleBaseRoute>} />
       <Route path='/library/issue-return' element={<RoleBaseRoute role={"admin"}>
         <DashboardLayout children={<IssueReturnPage />} />
+      </RoleBaseRoute>} />
+
+      {/* Reports Routes */}
+      <Route path='/reports/enrollment' element={<RoleBaseRoute role={"admin"}>
+        <DashboardLayout children={<EnrollmentReport />} />
       </RoleBaseRoute>} />
 
       <Route path='*' element={<PageNotFound />} />

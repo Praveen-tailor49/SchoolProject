@@ -36,6 +36,7 @@ const navItems = [
       { label: "Promotion", href: "/students/promotion" },
       { label: "Transfer", href: "/students/transfer" },
       { label: "Certificates", href: "/students/certificates" },
+      { label: "Reports", href: "/reports/enrollment" },
     ],
   },
   {

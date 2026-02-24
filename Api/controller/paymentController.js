@@ -27,7 +27,7 @@ export const getAllPayments = async (req, res) => {
     query += " ORDER BY p.payment_date DESC";
 
     const [payments] = await db.query(query, params);
-    res.status(200).json({ data: payments, message: "Payments fetched successfully" });
+    res.status(200).json(payments);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
@@ -115,17 +115,14 @@ export const getPaymentStats = async (req, res) => {
   try {
     const [stats] = await db.query(`
       SELECT 
-        COUNT(*) as total_payments,
-        SUM(amount) as total_amount,
-        SUM(CASE WHEN status = 'Completed' THEN amount ELSE 0 END) as completed_amount,
-        SUM(CASE WHEN status = 'Pending' THEN amount ELSE 0 END) as pending_amount,
-        SUM(CASE WHEN payment_method = 'Cash' THEN amount ELSE 0 END) as cash_amount,
-        SUM(CASE WHEN payment_method = 'Online' THEN amount ELSE 0 END) as online_amount,
-        SUM(CASE WHEN payment_method = 'UPI' THEN amount ELSE 0 END) as upi_amount,
-        SUM(CASE WHEN payment_method = 'Cheque' THEN amount ELSE 0 END) as cheque_amount
+        SUM(CASE WHEN status = 'Completed' THEN amount ELSE 0 END) as total,
+        SUM(CASE WHEN status = 'Completed' THEN amount ELSE 0 END) as received,
+        SUM(CASE WHEN status = 'Pending' THEN amount ELSE 0 END) as pending,
+        0 as expense,
+        SUM(CASE WHEN status = 'Completed' THEN amount ELSE 0 END) as income
       FROM payments
     `);
-    res.status(200).json({ data: stats[0], message: "Payment stats fetched successfully" });
+    res.status(200).json(stats[0]);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

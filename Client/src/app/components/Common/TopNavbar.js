@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
-import { Menu, Bell, Settings, User, Search, ChevronDown, LogOut } from "lucide-react"
+import { Menu, Bell, Settings, User, Search, ChevronDown, LogOut, Globe } from "lucide-react"
+import { useTranslation } from '../../contexts/LanguageContext'
 
 const TopNavbar = ({onMenuClick}) => {
+  const { t, language, toggleLanguage } = useTranslation()
   const [showProfile, setShowProfile] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
 
@@ -36,6 +38,18 @@ const TopNavbar = ({onMenuClick}) => {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Language Toggle */}
+        <button 
+          onClick={toggleLanguage}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors group"
+          title={language === 'en' ? 'Switch to Hindi' : 'Switch to English'}
+        >
+          <Globe className="w-5 h-5 text-gray-600 group-hover:text-indigo-600" />
+          <span className="ml-1 text-sm font-medium text-gray-600 group-hover:text-indigo-600">
+            {language === 'en' ? 'EN' : 'हि'}
+          </span>
+        </button>
+
         {/* Notifications */}
         <div className="relative">
           <button 

@@ -12,7 +12,7 @@ export const getAttendanceByDate = async (req, res) => {
     }
     
     const [attendance] = await db.query(query, params);
-    res.status(200).json({ data: attendance, message: "Attendance fetched successfully" });
+    res.status(200).json(attendance);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

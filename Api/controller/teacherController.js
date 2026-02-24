@@ -4,7 +4,7 @@ import db from '../db.js';
 export const getAllTeachers = async (req, res) => {
     try {
         const [teachers] = await db.query("SELECT teacher_id, full_name, user_email, phone, user_subject, qualification, experience, status, join_date, created_at FROM teacher ORDER BY created_at DESC");
-        res.status(200).json({ data: teachers, message: "Teachers fetched successfully" });
+        res.status(200).json(teachers);
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal server error" });

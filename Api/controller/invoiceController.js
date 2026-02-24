@@ -22,7 +22,7 @@ export const getAllInvoices = async (req, res) => {
     query += " ORDER BY i.created_at DESC";
 
     const [invoices] = await db.query(query, params);
-    res.status(200).json({ data: invoices, message: "Invoices fetched successfully" });
+    res.status(200).json(invoices);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
@@ -100,17 +100,14 @@ export const getInvoiceStats = async (req, res) => {
   try {
     const [stats] = await db.query(`
       SELECT 
-        COUNT(*) as total_invoices,
-        SUM(amount) as total_amount,
-        SUM(paid_amount) as collected_amount,
-        SUM(amount - paid_amount) as pending_amount,
-        SUM(CASE WHEN status = 'Paid' THEN 1 ELSE 0 END) as paid_count,
-        SUM(CASE WHEN status = 'Unpaid' THEN 1 ELSE 0 END) as unpaid_count,
-        SUM(CASE WHEN status = 'Partial' THEN 1 ELSE 0 END) as partial_count,
-        SUM(CASE WHEN status = 'Overdue' THEN 1 ELSE 0 END) as overdue_count
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'Paid' THEN 1 ELSE 0 END) as paid,
+        SUM(CASE WHEN status = 'Unpaid' THEN 1 ELSE 0 END) as unpaid,
+        SUM(CASE WHEN status = 'Partial' THEN 1 ELSE 0 END) as partial,
+        SUM(CASE WHEN status = 'Overdue' THEN 1 ELSE 0 END) as overdue
       FROM invoices
     `);
-    res.status(200).json({ data: stats[0], message: "Invoice stats fetched successfully" });
+    res.status(200).json(stats[0]);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

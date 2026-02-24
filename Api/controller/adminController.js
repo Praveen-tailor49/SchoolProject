@@ -4,7 +4,7 @@ import db from '../db.js';
 export const getAllAdmins = async (req, res) => {
   try {
     const [admins] = await db.query("SELECT admin_id, name, email, phone, role, status, last_login, created_at FROM admins ORDER BY created_at DESC");
-    res.status(200).json({ data: admins, message: "Admins fetched successfully" });
+    res.status(200).json(admins);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

@@ -3,7 +3,7 @@ import db from '../db.js';
 export const getAllStaff = async (req, res) => {
   try {
     const [staff] = await db.query("SELECT * FROM staff ORDER BY created_at DESC");
-    res.status(200).json({ data: staff, message: "Staff fetched successfully" });
+    res.status(200).json(staff);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

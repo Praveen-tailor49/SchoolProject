@@ -22,13 +22,13 @@ export default function ClassPage() {
     try {
       setLoading(true)
       const res = await getClasses()
-      const classes = res.data || []
+      const classes = res || [] // Backend returns data directly, not in res.data
       setData(classes.map(c => ({
-        id: c.id || c._id,
+        id: c.class_id || c.id, // Use class_id from database
         className: c.class_name || c.className || '',
         section: c.section || '',
         capacity: c.capacity || 0,
-        students: c.students || c.student_count || 0
+        students: c.students_count || c.student_count || 0
       })))
     } catch (error) {
       console.error('Error fetching classes:', error)
@@ -71,7 +71,8 @@ export default function ClassPage() {
     if (!window.confirm("Are you sure you want to delete this class?")) return
     try {
       await deleteClass(id)
-      setData(data.filter((item) => item.id !== id))
+      // Refresh data from server instead of local filtering
+      fetchClasses()
     } catch (error) {
       console.error('Error deleting class:', error)
       alert('Failed to delete class')
@@ -94,24 +95,12 @@ export default function ClassPage() {
 
       if (editingId) {
         await updateClass(editingId, payload)
-        setData(
-          data.map((item) =>
-            item.id === editingId
-              ? { ...item, ...formData }
-              : item
-          )
-        )
+        // Refresh data from server to get updated values
+        fetchClasses()
       } else {
-        const res = await createClass(payload)
-        const newClass = res.data
-        setData([
-          ...data,
-          {
-            id: newClass.id || newClass._id || Math.max(...data.map((d) => d.id), 0) + 1,
-            ...formData,
-            students: 0,
-          },
-        ])
+        await createClass(payload)
+        // Refresh data from server to get the new class
+        fetchClasses()
       }
 
       setIsDialogOpen(false)
