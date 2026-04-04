@@ -1,1 +1,30 @@
 @import "tailwindcss";
+
+@theme {
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-body: var(--font-newsreader), ui-serif, "Times New Roman", serif;
+  --color-parchment: #f4efe6;
+  --color-ink: #14120f;
+  --color-ink-muted: #5c574e;
+  --color-forest: #1b4332;
+  --color-forest-bright: #2d6a4f;
+  --color-clay: #bc6c25;
+  --color-mist: #e8e2d8;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-parchment text-ink antialiased;
+    font-family: var(--font-body);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+}

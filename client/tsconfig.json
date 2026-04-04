@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@db/schema": ["./db/schema/index.ts"]
     }
   },
   "include": [
